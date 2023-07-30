@@ -1,56 +1,98 @@
-import logo from './logo.svg';
+import { useState, useRef } from 'react';
 import './App.css';
-import { createElement } from 'react';
+import { isEmailValid, isPasswordValid } from './utils/validationUtils';
+import InputField from './components/input/InputField';
+import SubmitButton from './components/button/SubmitButton';
 
-export const App = () => {
-	const dateNow = new Date(); // отображаем дату и вызываем целый год под ссылкой (это императивный стиль написания кода)
+function App() {
+	const registerButtonRef = useRef();
 
-	/*//тут return начинается декларативный стиль. Он не затрагивает элементы. Он просто объявляет, что элементы должны отображаться с учетом нашего текущего состояния.
+	const [formData, setFormData] = useState({
+		email: '',
+		password: '',
+		repeatPassword: '',
+	});
+
+	const [errors, setErrors] = useState({
+		email: '',
+		password: '',
+		repeatPassword: '',
+	});
+
+	const handleChange = (e) => {
+		const { name, value } = e.target;
+		setFormData((prevData) => ({ ...prevData, [name]: value }));
+		setErrors((prevErrors) => ({ ...prevErrors, [name]: '' }));
+	};
+
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		const { email, password, repeatPassword } = formData;
+
+		if (!isEmailValid(email)) {
+			setErrors((prevErrors) => ({
+				...prevErrors,
+				email: 'Неверный формат электронной почты',
+			}));
+		} else if (!isPasswordValid(password)) {
+			setErrors((prevErrors) => ({
+				...prevErrors,
+				password: 'Пароль должен содержать как минимум 6 символов',
+			}));
+		} else if (password !== repeatPassword) {
+			setErrors((prevErrors) => ({
+				...prevErrors,
+				repeatPassword: 'Пароли не совпадают',
+			}));
+		} else {
+			console.log('Данные формы:', formData);
+			registerButtonRef.current.focus();
+		}
+	};
+
+	const isFormValid = () => {
+		return (
+			formData.email !== '' &&
+			formData.password !== '' &&
+			formData.repeatPassword !== ''
+		);
+	};
+
 	return (
 		<div className="App">
-			<header className="App-header">
-				<img src={logo} className="App-logo" alt="logo" />
-				<p>
-					Edit <code>src/App.js</code> and save to reload.
-				</p>
-				<a
-					className="App-link"
-					href="https://reactjs.org"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					Learn React
-				</a>
-				<p>{dateNow.getFullYear()}</p>
-			</header>
+			<h2>Sign Up</h2>
+			<form onSubmit={handleSubmit}>
+				<InputField
+					label="Email"
+					type="email"
+					name="email"
+					value={formData.email}
+					onChange={handleChange}
+					error={errors.email}
+				/>
+				<InputField
+					label="Пароль"
+					type="password"
+					name="password"
+					value={formData.password}
+					onChange={handleChange}
+					error={errors.password}
+				/>
+				<InputField
+					label="Повторите пароль"
+					type="password"
+					name="repeatPassword"
+					value={formData.repeatPassword}
+					onChange={handleChange}
+					error={errors.repeatPassword}
+				/>
+				<SubmitButton
+					isFormValid={isFormValid}
+					registerButtonRef={registerButtonRef}
+				/>
+			</form>
 		</div>
-	);*/
-	// Код без использования JSX
-	return createElement(
-		'div',
-		{ className: 'App' },
-		createElement(
-			'header',
-			{ className: 'App-header' },
-			createElement('img', { src: logo, className: 'App-logo', alt: 'logo' }),
-			createElement(
-				'p',
-				{},
-				'Edit ',
-				<code>src/App.js</code>,
-				' and save to reload.',
-			),
-			createElement(
-				'a',
-				{
-					className: 'App-link',
-					href: 'https://reactjs.org',
-					target: '_blank',
-					rel: 'noopener noreferrer',
-				},
-				'Learn React',
-			),
-			createElement('p', {}, dateNow.getFullYear()),
-		),
 	);
-};
+}
+
+export default App;
