@@ -1,8 +1,8 @@
 import { useState, useRef } from 'react';
-import './App.css';
 import { isEmailValid, isPasswordValid } from './utils/validationUtils';
 import InputField from './components/input/InputField';
 import SubmitButton from './components/button/SubmitButton';
+import styles from './App.module.css';
 
 function App() {
 	const registerButtonRef = useRef();
@@ -59,7 +59,7 @@ function App() {
 	};
 
 	return (
-		<div className="App">
+		<div className={styles.app}>
 			<h2>Sign Up</h2>
 			<form onSubmit={handleSubmit}>
 				<InputField
